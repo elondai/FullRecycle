@@ -14,7 +14,8 @@ model = create_model(opt)
 visualizer = Visualizer(opt)
 total_steps = 0
 
-for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
+#for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
+for epoch in range(opt.epoch_count, 10):
     epoch_start_time = time.time()
     epoch_iter = 0
 
