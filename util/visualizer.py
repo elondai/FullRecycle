@@ -102,6 +102,7 @@ class Visualizer():
             self.plot_data = {'X': [], 'Y': [], 'legend': list(errors.keys())}
         self.plot_data['X'].append(epoch + counter_ratio)
         self.plot_data['Y'].append([errors[k] for k in self.plot_data['legend']])
+        '''
         self.vis.line(
             X=np.stack([np.array(self.plot_data['X'])] * len(self.plot_data['legend']), 1),
             Y=np.array(self.plot_data['Y']),
@@ -111,7 +112,8 @@ class Visualizer():
                 'xlabel': 'epoch',
                 'ylabel': 'loss'},
             win=self.display_id)
-
+        '''
+        
     # errors: same format as |errors| of plotCurrentErrors
     def print_current_errors(self, epoch, i, errors, t):
         message = '(epoch: %d, iters: %d, time: %.3f) ' % (epoch, i, t)

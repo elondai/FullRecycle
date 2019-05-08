@@ -1,0 +1,1 @@
+python ../train.py --dataroot ../datasets/ObamaTrump_cut --name ObamaTrump_cycle --model cycle_gan  --which_model_netG resnet_6blocks --which_model_netP unet_256 --dataset_mode unaligned --no_dropout --gpu 0 --identity 0  --pool_size 0 
