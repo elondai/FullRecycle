@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Recycle-GAN :Unsupervised Video Retargeting 
 
 This repository provides the code for our work on [unsupervised video retargeting](http://www.cs.cmu.edu/~aayushb/Recycle-GAN/). 
@@ -84,3 +85,6 @@ Please use following links to download Face, Flowers, and Viper data:
 
 
 Please contact [Aayush Bansal](http://cs.cmu.edu/~aayushb) for any specific data or trained models, or for any other information. 
+=======
+# FullRecycle
+>>>>>>> 978f7a2c9a4c18cf34a4d52f914004a14b3d7d09
