@@ -156,10 +156,10 @@ class FullRecycleGANModel(BaseModel):
         #fake_B2 = self.netP_B(torch.cat((fake_B0, fake_B1),1))
         if self.which_model_netP == 'prediction':
             fake_p_B2 = self.netP_B(fake_B0, fake_B1)
-            fake_p_B0 = self.netP_B(fake_B2, fake_B1)
+            fake_p_B0 = self.netP_b_B(fake_B2, fake_B1)
         else:
             fake_p_B2 = self.netP_B(torch.cat((fake_B0, fake_B1), 1))
-            fake_p_B0 = self.netP_B(torch.cat((fake_B2, fake_B1), 1))
+            fake_p_B0 = self.netP_b_B(torch.cat((fake_B2, fake_B1), 1))
 
         self.rec_A2 = self.netG_B(fake_p_B2).data
         self.rec_A0 = self.netG_B(fake_p_B0).data
@@ -181,10 +181,10 @@ class FullRecycleGANModel(BaseModel):
         #fake_A2 = self.netP_A(torch.cat((fake_A0, fake_A1),1))
         if self.which_model_netP == 'prediction':
             fake_p_A2 = self.netP_A(fake_A0, fake_A1)
-            fake_p_A0 = self.netP_A(fake_A2, fake_A1)
+            fake_p_A0 = self.netP_b_A(fake_A2, fake_A1)
         else:
             fake_p_A2 = self.netP_A(torch.cat((fake_A0, fake_A1), 1))
-            fake_p_A0 = self.netP_A(torch.cat((fake_A2, fake_A1), 1))
+            fake_p_A0 = self.netP_b_A(torch.cat((fake_A2, fake_A1), 1))
 
         self.rec_B2 = self.netG_A(fake_p_A2).data
         self.rec_B0 = self.netG_A(fake_p_A0).data
@@ -198,13 +198,13 @@ class FullRecycleGANModel(BaseModel):
         if self.which_model_netP == 'prediction':
             pred_A2 = self.netP_A(real_A0, real_A1)
             pred_B2 = self.netP_B(real_B0, real_B1)
-            pred_A0 = self.netP_A(real_A2, real_A1)
-            pred_B0 = self.netP_B(real_B2, real_B1)
+            pred_A0 = self.netP_b_A(real_A2, real_A1)
+            pred_B0 = self.netP_b_B(real_B2, real_B1)
         else:
             pred_A2 = self.netP_A(torch.cat((real_A0, real_A1), 1))
             pred_B2 = self.netP_B(torch.cat((real_B0, real_B1), 1))
-            pred_A0 = self.netP_A(torch.cat((real_A2, real_A1), 1))
-            pred_B0 = self.netP_B(torch.cat((real_B2, real_B1), 1))
+            pred_A0 = self.netP_b_A(torch.cat((real_A2, real_A1), 1))
+            pred_B0 = self.netP_b_B(torch.cat((real_B2, real_B1), 1))
 
         self.pred_A2 = pred_A2.data
         self.pred_B2 = pred_B2.data
@@ -284,8 +284,8 @@ class FullRecycleGANModel(BaseModel):
 
         # GAN loss D_A(G_A(A))
         fake_B0 = self.netG_A(self.real_A0)
-        pred_fake = self.netD_A(fake_B0)
-        loss_G_A0 = self.criterionGAN(pred_fake, True)
+        #pred_fake = self.netD_A(fake_B0)
+        #loss_G_A0 = self.criterionGAN(pred_fake, True)
 
         fake_B1 = self.netG_A(self.real_A1)
         pred_fake = self.netD_A(fake_B1)
@@ -293,16 +293,21 @@ class FullRecycleGANModel(BaseModel):
 
 
         fake_B2 = self.netG_A(self.real_A2)
-        pred_fake = self.netD_A(fake_B2)
-        loss_G_A2 = self.criterionGAN(pred_fake, True)
+        #pred_fake = self.netD_A(fake_B2)
+        #loss_G_A2 = self.criterionGAN(pred_fake, True)
         
         if self.which_model_netP == 'prediction':
             fake_pred_B2 = self.netP_B(fake_B0, fake_B1)
-            fake_pred_B0 = self.netP_B(fake_B2, fake_B1)
+            fake_pred_B0 = self.netP_b_B(fake_B2, fake_B1)
         else:
             fake_pred_B2 = self.netP_B(torch.cat((fake_B0, fake_B1), 1))
-            fake_pred_B0 = self.netP_B(torch.cat((fake_B2, fake_B1), 1))
+            fake_pred_B0 = self.netP_b_B(torch.cat((fake_B2, fake_B1), 1))
 
+        pred_fake = self.netD_A(fake_pred_B0)
+        loss_G_A0 = self.criterionGAN(pred_fake, True)
+        pred_fake = self.netD_A(fake_pred_B2)
+        loss_G_A2 = self.criterionGAN(pred_fake, True)
+        
         pred_fake = self.netD_A(fake_pred_B2)
         loss_G_pred_A2 = self.criterionGAN(pred_fake, True)
         pred_fake = self.netD_A(fake_pred_B0)
@@ -310,24 +315,29 @@ class FullRecycleGANModel(BaseModel):
                 
         # GAN loss D_B(G_B(B))
         fake_A0 = self.netG_B(self.real_B0)
-        pred_fake = self.netD_B(fake_A0)
-        loss_G_B0 = self.criterionGAN(pred_fake, True)
+        #pred_fake = self.netD_B(fake_A0)
+        #loss_G_B0 = self.criterionGAN(pred_fake, True)
 
         fake_A1 = self.netG_B(self.real_B1)
         pred_fake = self.netD_B(fake_A1)
         loss_G_B1 = self.criterionGAN(pred_fake, True)
 
         fake_A2 = self.netG_B(self.real_B2)
-        pred_fake = self.netD_B(fake_A2)
-        loss_G_B2 = self.criterionGAN(pred_fake, True)
+        #pred_fake = self.netD_B(fake_A2)
+        #loss_G_B2 = self.criterionGAN(pred_fake, True)
         
         if self.which_model_netP == 'prediction':
             fake_pred_A2 = self.netP_A(fake_A0, fake_A1)
-            fake_pred_A0 = self.netP_A(fake_A2, fake_A1)
+            fake_pred_A0 = self.netP_b_A(fake_A2, fake_A1)
         else:
             fake_pred_A2 = self.netP_A(torch.cat((fake_A0, fake_A1), 1))
-            fake_pred_A0 = self.netP_A(torch.cat((fake_A2, fake_A1), 1))
-
+            fake_pred_A0 = self.netP_b_A(torch.cat((fake_A2, fake_A1), 1))
+            
+        pred_fake = self.netD_A(fake_pred_A0)
+        loss_G_B0 = self.criterionGAN(pred_fake, True)
+        pred_fake = self.netD_A(fake_pred_A2)
+        loss_G_B2 = self.criterionGAN(pred_fake, True)
+        
         pred_fake = self.netD_B(fake_pred_A2)
         loss_G_pred_B2 = self.criterionGAN(pred_fake, True)
         pred_fake = self.netD_B(fake_pred_A0)
@@ -337,10 +347,10 @@ class FullRecycleGANModel(BaseModel):
         #pred_A2 = self.netP_A(torch.cat((self.real_A0, self.real_A1),1))
         if self.which_model_netP == 'prediction':
             pred_A2 = self.netP_A(self.real_A0, self.real_A1)
-            pred_A0 = self.netP_A(self.real_A2, self.real_A1)
+            pred_A0 = self.netP_b_A(self.real_A2, self.real_A1)
         else:
             pred_A2 = self.netP_A(torch.cat((self.real_A0, self.real_A1), 1))
-            pred_A0 = self.netP_A(torch.cat((self.real_A2, self.real_A1), 1))
+            pred_A0 = self.netP_b_A(torch.cat((self.real_A2, self.real_A1), 1))
 
         loss_pred_A = self.criterionCycle(pred_A2, self.real_A2) * lambda_A
         loss_pred_b_A = self.criterionCycle(pred_A0, self.real_A0) * lambda_A
@@ -348,10 +358,10 @@ class FullRecycleGANModel(BaseModel):
         #pred_B2 = self.netP_B(torch.cat((self.real_B0, self.real_B1),1))
         if self.which_model_netP == 'prediction':
             pred_B2 = self.netP_B(self.real_B0, self.real_B1)
-            pred_B0 = self.netP_B(self.real_B2, self.real_B1)
+            pred_B0 = self.netP_b_B(self.real_B2, self.real_B1)
         else:
             pred_B2 = self.netP_B(torch.cat((self.real_B0, self.real_B1), 1))
-            pred_B0 = self.netP_B(torch.cat((self.real_B2, self.real_B1), 1))
+            pred_B0 = self.netP_b_B(torch.cat((self.real_B2, self.real_B1), 1))
 
         loss_pred_B = self.criterionCycle(pred_B2, self.real_B2) * lambda_B
         loss_pred_b_B = self.criterionCycle(pred_B0, self.real_B0) * lambda_B
@@ -364,7 +374,7 @@ class FullRecycleGANModel(BaseModel):
         
         # Backward cycle loss
         rec_B2 = self.netG_A(fake_pred_A2)
-        loss_cycle_B = self.criterionCycle(rec_B2, self.real_B2) * lambda_B
+        loss_cycle_B2 = self.criterionCycle(rec_B2, self.real_B2) * lambda_B
         rec_B0 = self.netG_A(fake_pred_A0)
         loss_cycle_B0 = self.criterionCycle(rec_B0, self.real_B0) * lambda_B
         
@@ -480,5 +490,5 @@ class FullRecycleGANModel(BaseModel):
         self.save_network(self.netD_B, 'D_B', label, self.gpu_ids)
         self.save_network(self.netP_A, 'P_A', label, self.gpu_ids)
         self.save_network(self.netP_B, 'P_B', label, self.gpu_ids)
-        self.save_network(self.netP_A, 'P_b_A', label, self.gpu_ids)
-        self.save_network(self.netP_B, 'P_b_B', label, self.gpu_ids)
+        self.save_network(self.netP_b_A, 'P_b_A', label, self.gpu_ids)
+        self.save_network(self.netP_b_B, 'P_b_B', label, self.gpu_ids)

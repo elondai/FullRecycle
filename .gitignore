@@ -7,3 +7,5 @@ scripts/merged
 scripts/results
 
 *checkpoints*
+
+*.pyc
