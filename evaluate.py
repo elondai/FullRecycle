@@ -44,7 +44,7 @@ if __name__ == '__main__':
     if args.impl == 'torch':
         class IgnoreLabelDataset(torch.utils.data.Dataset):
             def __init__(self, path, transforms_):
-                self.imgs = np.asarray(list(glob.glob(path + '*_fake_B*')))
+                self.imgs = np.asarray(list(glob.glob(path + '*')))
                 self.transform = transforms_
 
             def __getitem__(self, index):
